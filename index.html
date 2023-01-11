@@ -14,7 +14,7 @@
         font-style: normal;
     }
 
-    /* body{opacity:.03;} */
+    body{opacity:.03;}
 
     /* body{font-family: 'UhBeeDongKyung';} */
     html, body{height: 100%;}
@@ -93,7 +93,7 @@
                 qs('#guide').innerHTML = '게임이 시작되었습니다.';
                 
                 for(let i = 0; i < 10; i++){
-                    const delay = getRandomNum(t.delay, 2000);
+                    const delay = getRandomNum(0, 3000);
                     setTimeout(function(){
                         t.targetIdx++;
                         qs('#guide').innerHTML = '현재 표적: ' + t.targetIdx + ' / shoot: ' + t.shootCnt + ' / miss: ' + t.missCnt;
@@ -113,14 +113,14 @@
                         qs('#board').appendChild(div);
                     }, t.delay + delay + 1000);
 
-                    t.delay = t.delay + delay + 1000;
+                    t.delay += (delay + 1000);
                 }
             }
 
             t.initValue = function(){
                 t.mode = t.delay = t.targetIdx = t.missCnt = t.shhtCnt = 0;
                 t.isStart = false;
-                
+
                 qs('#board').innerHTML = '';
                 qs('#guide').innerHTML = '시작버튼을 눌러주세요.';
             }
