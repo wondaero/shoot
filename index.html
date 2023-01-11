@@ -35,14 +35,14 @@
         box-shadow: inset 0 0 10px #fff; border-radius: 5px;
     }
 
-    .board > div{background: radial-gradient(#0f0, transparent); transform: scale(0); box-shadow: 0 0 20px #0f0;}
+    .board > div{background: radial-gradient(#fff, transparent); transform: scale(0); box-shadow: 0 0 20px #fff;}
 
     .status{list-style: none; margin: 0; padding: 0; display: none;}
     .status.on{display: block;}
 
     .scores, .bullets{display: inline-flex;}
     .scores > div{
-        width: 15px; height: 15px; border-radius: 50%; background: radial-gradient(#0f0, transparent); box-shadow: 0 0 20px #0f0;
+        width: 15px; height: 15px; border-radius: 50%; background: radial-gradient(#fff, transparent); box-shadow: 0 0 20px #fff;
         margin-right: 5px;
     }
     .bullets > div{
@@ -63,7 +63,7 @@
 <body>
     <div class="wrapper">
         <header>
-            <h1 class="logo">Shooting</h1>
+            <h1 class="logo">Sh..ting</h1>
             <div><button class="start" onclick="shoot.startGame();">시작</button></div>
         </header>
         <div class="wrapper2">
@@ -122,7 +122,7 @@
                         position: absolute;
                         top: ${getRandomNum(5, qs('#board').clientHeight - 55)}px;
                         left: ${getRandomNum(5, qs('#board').clientWidth - 55)}px;
-                        animation: lv1 8s ${(t.delay + delay + 1500) / 1000}s ease-in-out alternate;
+                        animation: lv1 .8s ${(t.delay + delay + 1500) / 1000}s ease-in-out alternate;
                     `;
                     div.addEventListener('animationend', (event) => {
                         t.targetIdx++;
