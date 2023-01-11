@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>슈팅</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="./assets/css/normalize.css">
+</head>
+<style>
+    @font-face {
+        font-family: 'UhBeeDongKyung';  /*어비동경체*/
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_five@.2.0/UhBeeDongKyung.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    /* body{opacity:.03;} */
+
+    /* body{font-family: 'UhBeeDongKyung';} */
+    html, body{height: 100%;}
+    header{margin-bottom: 10px; background: firebrick; padding: 10px; display: flex; align-items: center; justify-content: space-between;}
+    header h1{margin: 0; padding: 0;}
+
+    .wrapper2{width: 280px; margin: 0 auto;}
+
+    .guide{margin: 0; margin-bottom: 5px; font-size: 16px;}
+
+    .board{width: 280px; height: 280px; box-sizing: border-box; border: 3px double #000; margin: 0 auto; position: relative;}
+
+    .board div{width: 30px; height: 30px; animation: lv1 .5s ease-in-out alternate; background: red; transform: scale(0);}
+
+
+
+    @keyframes lv1{
+        from{transform: scale(1);}
+        to{transform: scale(0);}
+    }
+    @keyframes lv2{
+        from{transform: scale(1);}
+        to{transform: scale(0);}
+    }
+    @keyframes lv3{
+        from{transform: scale(1);}
+        to{transform: scale(0);}
+    }
+    @keyframes lv4{
+        from{transform: scale(1);}
+        to{transform: scale(0);}
+    }
+    @keyframes lv5{
+        from{transform: scale(1);}
+        to{transform: scale(0);}
+    }
+
+
+</style>
+<body>
+    <div class="wrapper">
+        <header>
+            <h1 class="logo">슈팅</h1>
+            <div><button class="start" onclick="shoot.startGame();">시작</button></div>
+        </header>
+        <div class="wrapper2">
+            <h2 id="guide" class="guide">시작버튼을 눌러주세요.</h2>
+            <div id="board" class="board"></div>
+        </div>
+    </div>
+
+    <script>
+        const qs = function(t){return document.querySelector(t);}
+        const qsa = function(t){return document.querySelectorAll(t);}
+        function getRandomNum(mn, mx){return Math.floor(Math.random() * (mx - mn + 1)) + mn;};
+
+        const shoot = new Shoot();
+
+        function Shoot(){
+            const t = this;
+            
+            t.mode = 0;
+            t.delay = 0;
+            t.targetIdx = 0;
+            t.missCnt = 0;
+            t.shootCnt = 0;
+
+            t.isStart = false;
+
+            t.startGame = function(){
+                if(t.isStart) return;
+
+                t.initValue();
+                t.isStart = true;
+
+                qs('#guide').innerHTML = '게임이 시작되었습니다.';
+                
+                for(let i = 0; i < 10; i++){
+                    const delay = getRandomNum(t.delay, 2000);
+                    setTimeout(function(){
+                        t.targetIdx++;
+                        qs('#guide').innerHTML = '현재 표적: ' + t.targetIdx + ' / shoot: ' + t.shootCnt + ' / miss: ' + t.missCnt;
+                        qs('#board').innerHTML = '';
+
+                        const div = document.createElement('div');
+                        div.setAttribute('id', 'target');
+                        div.classList.add('lv1');
+                        div.style.cssText = `
+                            width: 30px;
+                            height: ${30}px;
+                            border-radius: 50%;
+                            position: absolute;
+                            top: ${getRandomNum(5, qs('#board').clientHeight - 35)}px;
+                            left: ${getRandomNum(5, qs('#board').clientWidth - 35)}px;
+                        `;
+                        qs('#board').appendChild(div);
+                    }, t.delay + delay + 1000);
+
+                    t.delay = t.delay + delay + 1000;
+                }
+            }
+
+            t.initValue = function(){
+                t.mode = t.delay = t.targetIdx = t.missCnt = t.shhtCnt = 0;
+                t.isStart = false;
+                
+                qs('#board').innerHTML = '';
+                qs('#guide').innerHTML = '시작버튼을 눌러주세요.';
+            }
+
+        }
+
+        qs('#board').addEventListener('click', function(e){
+            const id = e.target.id;
+
+            if(id === 'board'){
+                shoot.missCnt++;
+            }else if(id === 'target'){
+                e.target.remove();
+                shoot.shootCnt++;
+            }
+
+            qs('#guide').innerHTML = '현재 표적: ' + shoot.targetIdx + ' / shoot: ' + shoot.shootCnt + ' / miss: ' + shoot.missCnt;
+        })
+
+    </script>
+
+
+
+</body>
+</html>
