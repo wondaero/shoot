@@ -13,8 +13,9 @@
         font-weight: normal;
         font-style: normal;
     }
+    body{opacity: .05;}
 
-    body{background: #000; color: #fff;}
+    /* body{background: #000; color: #fff;} */
 
     /* body{font-family: 'UhBeeDongKyung';} */
     html, body{height: 100%;}
@@ -57,6 +58,22 @@
     @keyframes lv1{
         from{transform: scale(1);}
         to{transform: scale(0);}
+    }
+
+    @keyframes circle{
+        to{transform: scale(1.5);}
+    }
+    @keyframes bar1{
+        to{
+            transform: rotate(45deg) scaleX(1.5);
+            opacity: 0;
+        }
+    }
+    @keyframes bar2{
+        to{
+            transform: rotate(45deg) scale(0);
+            opacity: 0;
+        }
     }
 
 </style>
@@ -163,15 +180,90 @@
         }
 
         qs('#board').addEventListener('click', function(e){
+            fnc1(e, 'click');
+        })
+        qs('#board').addEventListener('touchend', function(e){
+            e.preventDefault();
+            fnc1(e, 'touch');
+            
+        });
+
+        function fnc1(e, type){
             if(shoot.isGameOver){
                 alert('게임이 끝났습니다.\n시작버튼을 눌러주세요.');
                 return;
             }
 
+            let target;
+            if(type == 'touch') target = e.changedTouches[0];
+            else if(type == 'click') target = e;
+
+            const div = document.createElement('div');
+            const div2 = document.createElement('div');
+            const div3 = document.createElement('div');
+
+            div.style.cssText = `
+                position: fixed;
+                top: ${target.pageY}px;
+                left: ${target.pageX}px;
+                width: 30px;
+                height: 30px;
+                margin-left: -15px;
+                margin-top: -15px;
+                background: radial-gradient(rgba(0, 0, 0, .2), transparent, transparent);
+                border: 1px solid rgba(0, 0, 0, .2);
+                transform: scale(0);
+                border-radius: 50%;
+                animation: circle .5s ease-in-out alternate;
+            `;
+                
+            div2.style.cssText = `
+                width: 120px;
+                height: 2px;
+                background: #0ff;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                margin-top: -1px;
+                margin-left: -60px;
+                transform: rotate(-45deg);
+                box-sizing: border-box;
+                border-left: 0;
+                border-right: 0;
+                animation: bar1 .5s ease-in-out alternate;
+            `;
+            
+            div3.style.cssText = `
+                width: 100px;
+                height: 2px;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                box-sizing: border-box;
+                border-left: 10px solid rgba(255, 0, 0, .5);
+                border-right: 10px solid rgba(255, 0, 0, .5);
+                margin-top: -1px;
+                margin-left: -50px;
+                transform: rotate(45deg) scale(1.2);
+                animation: bar2 .5s .2s ease-in-out alternate;
+            `;
+
+            div.appendChild(div2);
+            div.appendChild(div3);
+
+            div.addEventListener('animationend', function(){
+                this.remove();
+            })
+            
+
+            qs('#board').appendChild(div);
+
             const bullets = qs('#bullets').querySelectorAll('.bullet:not(.off)');
             const id = e.target.id;
 
             bullets[bullets.length - 1].classList.add('off');
+
+
             if(!(bullets.length - 1)){
                 shoot.gameOver();
                 return;
@@ -185,19 +277,17 @@
                 shoot.shootCnt++;
                 shoot.targetIdx++;
                 
-                const div = document.createElement('div');
-                div.classList.add('score');
-                qs('#score').appendChild(div);
+                const shooted = document.createElement('div');
+                shooted.classList.add('score');
+                qs('#score').appendChild(shooted);
                 if(shoot.targetIdx == 10){
                     shoot.gameOver();
                     return;
                 }else{
                     qs('#guide').innerHTML = '표적을 맞혀주세요(' + (shoot.targetIdx + 1) + '/10)';
                 }
-                            
-
             }
-        })
+        }
 
     </script>
 
