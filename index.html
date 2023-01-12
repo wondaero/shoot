@@ -35,7 +35,7 @@
         box-shadow: inset 0 0 10px #fff; border-radius: 5px;
     }
 
-    .board > div{background: radial-gradient(#fff, transparent); transform: scale(0); box-shadow: 0 0 20px #fff;}
+    .board > .lv1{background: radial-gradient(#fff, transparent); transform: scale(0); box-shadow: 0 0 20px #fff;}
 
     .status{list-style: none; margin: 0; padding: 0; display: none;}
     .status.on{display: block;}
@@ -59,6 +59,8 @@
         to{transform: scale(0);}
     }
 
+
+
     @keyframes circle{
         to{transform: scale(1.5);}
     }
@@ -73,6 +75,16 @@
             transform: rotate(45deg) scale(0);
             opacity: 0;
         }
+    }
+
+
+    @keyframes zoomOut{
+        from{transform: scale(1); opacity: 1;}
+        to{transform: scale(.5); opacity: 0;}
+    }
+    @keyframes bullet{
+        from{top: 100px; width: 5px; height: 15px; opacity: 1;}
+        to{top: 15px; width: 5px; height: 100px; opacity: 0;}
     }
 
 </style>
@@ -128,9 +140,14 @@
                 
                 for(let i = 0; i < 10; i++){
                     const delay = getRandomNum(0, 3000);
+
                     const div = document.createElement('div');
+                    const div2 = document.createElement('div');
+                    const div3 = document.createElement('div');
+
                     div.setAttribute('id', 'target');
                     div.classList.add('lv1');
+
                     div.style.cssText = `
                         width: 50px;
                         height: 50px;
@@ -138,12 +155,48 @@
                         position: absolute;
                         top: ${getRandomNum(5, qs('#board').clientHeight - 55)}px;
                         left: ${getRandomNum(5, qs('#board').clientWidth - 55)}px;
-                        animation: lv1 .8s ${(t.delay + delay + 1500) / 1000}s ease-in-out alternate;
+                        animation: lv1 .5s ${(t.delay + delay + 1500) / 1000}s ease-in-out alternate;
                     `;
+
+                    // div2.style.cssText = `
+                    //     width: 120px;
+                    //     height: 2px;
+                    //     background: #0ff;
+                    //     position: absolute;
+                    //     top: 50%;
+                    //     left: 50%;
+                    //     margin-top: -1px;
+                    //     margin-left: -60px;
+                    //     transform: rotate(-45deg);
+                    //     box-sizing: border-box;
+                    //     border-left: 0;
+                    //     border-right: 0;
+                    //     animation: bar1 .5s ease-in-out alternate;
+                    // `;
+                    
+                    // div3.style.cssText = `
+                    //     width: 100px;
+                    //     height: 2px;
+                    //     position: absolute;
+                    //     top: 50%;
+                    //     left: 50%;
+                    //     box-sizing: border-box;
+                    //     border-left: 10px solid rgba(255, 0, 0, .5);
+                    //     border-right: 10px solid rgba(255, 0, 0, .5);
+                    //     margin-top: -1px;
+                    //     margin-left: -50px;
+                    //     transform: rotate(45deg) scale(1.2);
+                    //     animation: bar2 .5s .2s ease-in-out alternate;
+                    // `;
+
+                    // div.appendChild(div2);
+                    // div.appendChild(div3);
+
                     div.addEventListener('animationend', (event) => {
+                        console.log(222);
                         t.targetIdx++;
                         if(t.targetIdx == 10){
-                            t.gameOver();
+                            // t.gameOver();
                         }else{
                             qs('#guide').innerHTML = '표적을 맞혀주세요(' + (t.targetIdx + 1) + '/10)';
                         }
@@ -179,13 +232,88 @@
         }
 
         qs('#board').addEventListener('click', function(e){
-            fnc1(e, 'click');
+            fnc2(e, 'click');
         })
         qs('#board').addEventListener('touchend', function(e){
             e.preventDefault();
-            fnc1(e, 'touch');
-            
+            fnc2(e, 'touch');
         });
+
+
+        function fnc2(e, type){
+           if(shoot.isGameOver){
+                alert('게임이 끝났습니다.\n시작버튼을 눌러주세요.');
+                return;
+            }
+
+            let target;
+            if(type == 'touch') target = e.changedTouches[0];
+            else if(type == 'click') target = e;
+
+            const div = document.createElement('div');
+            const div2 = document.createElement('div');
+            const div3 = document.createElement('div');
+            const div4 = document.createElement('div');
+
+            div.style.cssText = `
+                position: fixed;
+                top: ${target.pageY}px;
+                left: ${target.pageX}px;
+                width: 30px;
+                height: 30px;
+                margin-left: -15px;
+                margin-top: -15px;
+                transform: scale(.5);
+                opacity: 0;
+                animation: zoomOut .5s ease-in-out alternate;
+            `;
+
+            div2.style.cssText = `
+                width: 5px;
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                box-sizing: border-box;
+                border: 2px solid rgba(255, 255, 255, .5);
+                border-right: 0;
+            `;
+            div3.style.cssText = `
+                width: 5px;
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                box-sizing: border-box;
+                border: 2px solid rgba(255, 255, 255, .5);
+                border-left: 0;
+            `;
+                
+            div4.style.cssText = `
+                width: 1px;
+                height: 3px;
+                background: linear-gradient(#c1af4c, transparent);
+                opacity: 0;
+                position: absolute;
+                top: 15px;
+                left: 50%;
+                transform: translateX(-50%);
+                animation: bullet .2s ease-in-out alternate;
+            `;
+
+            div.appendChild(div2);
+            div.appendChild(div3);
+            div.appendChild(div4);
+
+            div.addEventListener('animationend', function(){
+                this.remove();
+            })
+            
+
+            qs('#board').appendChild(div);
+
+            targetProcess(e);
+        }
 
         function fnc1(e, type){
             if(shoot.isGameOver){
@@ -211,7 +339,7 @@
                 margin-top: -15px;
                 background: radial-gradient(rgba(255, 255, 255, .1), transparent, transparent);
                 border: 1px solid rgba(255, 255, 255, .8);
-                transform: scale(0);
+                transform: scale(0);    
                 border-radius: 50%;
                 animation: circle .5s ease-in-out alternate;
             `;
@@ -257,6 +385,12 @@
 
             qs('#board').appendChild(div);
 
+            targetProcess(e);
+
+            
+        }
+
+        function targetProcess(e){
             const bullets = qs('#bullets').querySelectorAll('.bullet:not(.off)');
             const id = e.target.id;
 
@@ -287,6 +421,7 @@
                 }
             }
         }
+
 
     </script>
 
