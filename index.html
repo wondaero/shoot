@@ -14,16 +14,29 @@
         font-style: normal;
     }
 
-    body{background: #000; color: #fff;}
-
+    /* body{opacity: .2;} */
     /* body{font-family: 'UhBeeDongKyung';} */
+    body{background: #000; color: #fff;}
     html, body{height: 100%;}
-    header{margin-bottom: 10px; background: darkgray; padding: 10px; display: flex; align-items: center; justify-content: space-between;}
-    header h1{margin: 0; padding: 0;}
+    header{margin-bottom: 10px; background: darkgray; padding: 10px;}
+    .header-top{margin-bottom: 10px;  display: flex; align-items: center; justify-content: space-between;}
+    .header-bottom{display: flex; align-items: center;}
+    .logo{margin: 0; padding: 0;}
     .start{
         background: #00f; color: #fff; border-radius: 5px; border: 0; padding: 10px 20px; font-weight: 900;
         display: inline-flex; align-items: center; justify-content: center;
-    } 
+    }
+    input{display: none;}
+    input + span{
+        border-radius: 5px; display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; font-weight: 900;
+        opacity: .2; margin-right: 10px;
+    }
+    .header-bottom input:last-child + span{margin-right: 0;}
+    input[value=".5"] + span{background: #f00; color: #fff;}
+    input[value=".8"] + span{background: #ff0;}
+    input[value="1"] + span{background: #0f0;}
+
+    input:checked + span{opacity: 1;}
 
     .wrapper2{width: 280px; margin: 0 auto;}
 
@@ -89,8 +102,15 @@
 <body>
     <div class="wrapper">
         <header>
-            <h1 class="logo">Sh..ting</h1>
-            <div><button class="start" onclick="shoot.startGame();">시작</button></div>
+            <div class="header-top">
+                <h1 class="logo">Sh..ting</h1>
+                <div><button class="start" onclick="shoot.startGame();">시작</button></div>
+            </div>
+            <div class="header-bottom">
+                <label><input type="radio" name="level" value=".5" data-value="상" /><span>상</span></label>
+                <label><input type="radio" name="level" value=".8" data-value="중" /><span>중</span></label>
+                <label><input type="radio" name="level" value="1" data-value="하" checked /><span>하</span></label>
+            </div>
         </header>
         <div class="wrapper2">
             <h2 id="guide" class="guide">시작버튼을 눌러주세요.</h2>
@@ -121,10 +141,17 @@
             t.isStart = false;
             t.isGameOver = false;
 
+            t.level;
+
             t.startGame = function(){
                 if(t.isStart) return;
 
                 t.initValue();
+
+                const level = qs('[name="level"]:checked');
+                t.level = level.dataset.value;
+
+
                 t.isStart = true;
 
                 qs('#guide').innerHTML = '표적을 맞혀주세요(1/10)';
@@ -137,7 +164,7 @@
                 }
                 
                 for(let i = 0; i < 10; i++){
-                    const delay = getRandomNum(0, 3000);
+                    const delay = getRandomNum(1500, 4500);
 
                     const div = document.createElement('div');
 
@@ -151,7 +178,7 @@
                         position: absolute;
                         top: ${getRandomNum(5, qs('#board').clientHeight - 55)}px;
                         left: ${getRandomNum(5, qs('#board').clientWidth - 55)}px;
-                        animation: lv1 .5s ${(t.delay + delay + 1500) / 1000}s ease-in-out alternate;
+                        animation: lv1 ${level.value}s ${(t.delay + delay) / 1000}s ease-in-out alternate;
                     `;
                     
                     div.addEventListener('animationend', (event) => {
@@ -162,12 +189,15 @@
                     
                     qs('#board').appendChild(div);
                     
-                    t.delay += (delay + 1500);
+                    t.delay += delay;
+
+                    console.log((t.delay / 1000), '초');
                 }
             }
 
             t.initValue = function(){
                 t.mode = t.delay = t.targetIdx = t.missCnt = t.shhtCnt = 0;
+                t.level = undefined;
                 t.isStart = t.isGameOver = false;
 
                 qs('#guide').innerHTML = '시작버튼을 눌러주세요.';
@@ -181,7 +211,11 @@
 
             t.gameOver = function(){
                 qs('#guide').innerHTML = '게임이 끝났습니다.';
-                qs('#board').innerHTML = 'GAME OVER';
+                qs('#board').innerText = `
+                    GAME OVER
+                    난이도: ${t.level}
+                    맞힌 갯수: ${t.shootCnt}
+                `;
 
                 t.isGameOver = true;
                 t.isStart = false;
