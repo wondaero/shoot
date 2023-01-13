@@ -190,8 +190,6 @@
                     qs('#board').appendChild(div);
                     
                     t.delay += delay;
-
-                    console.log((t.delay / 1000), '초');
                 }
             }
 
@@ -211,11 +209,9 @@
 
             t.gameOver = function(){
                 qs('#guide').innerHTML = '게임이 끝났습니다.';
-                qs('#board').innerText = `
-                    GAME OVER
+                qs('#board').innerText = `GAME OVER
                     난이도: ${t.level}
-                    맞힌 갯수: ${t.shootCnt}
-                `;
+                    맞힌 갯수: ${t.shootCnt}`;
 
                 t.isGameOver = true;
                 t.isStart = false;
