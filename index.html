@@ -167,8 +167,10 @@
 
             t.isStart = false;
             t.isGameOver = false;
+            t.stopInc = false;
 
             t.level;
+
 
             t.startGame = function(){
                 if(t.isStart) return;
@@ -205,7 +207,9 @@
                     `;
                     
                     div.addEventListener('animationend', (event) => {
-                        t.targetIdx++;
+                        if(!t.stopInc) t.targetIdx++;
+
+                        t.stopInc = false;
                         if(t.targetIdx == 10) t.gameOver();
                         else qs('#guide').innerHTML = '표적을 맞혀주세요(' + (t.targetIdx + 1) + '/10)';
                     });
@@ -219,7 +223,7 @@
             t.initValue = function(){
                 t.mode = t.delay = t.targetIdx = t.missCnt = t.shhtCnt = 0;
                 t.level = undefined;
-                t.isStart = t.isGameOver = false;
+                t.isStart = t.isGameOver = t.stopInc = false;
 
                 qs('#guide').innerHTML = '시작버튼을 눌러주세요.';
 
@@ -339,6 +343,7 @@
                     left: e.target.style.left
                 });
                 e.target.remove();
+                shoot.stopInc = true;
                 shoot.shootCnt++;
                 shoot.targetIdx++;
                 
