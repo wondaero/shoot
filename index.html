@@ -25,16 +25,19 @@
     input{display: none;}
     input + span{
         border-radius: 5px; display: inline-flex; align-items: center; justify-content: center; padding: 5px 18px; font-weight: 900;
-        opacity: .2; margin-right: 5px;
+        opacity: .2; margin-right: 5px; font-weight: 900;
     }
     .header-bottom input:last-child + span{margin-right: 0;}
     input[value="1.5"] + span{background: #0f0; color: #000;}
-    input[value="1.2"] + span{background: #7f0;}
+    input[value="1.2"] + span{background: #7f0; color: #000;}
     input[value="1"] + span{background: #ff0; color: #000;}
     input[value=".8"] + span{background: #f70;}
     input[value=".5"] + span{background: #f00;}
 
-    input:checked + span{opacity: 1; box-shadow: inset 0 0 5px rgba(0, 0, 0, .5);}
+    input:checked + span{
+        opacity: 1; box-shadow: inset 0 0 5px rgba(0, 0, 0, .5); transform: scale(1.1);
+        transition: opacity .5s, transform .5s;
+    }
 
     .wrapper2{width: 280px; margin: 0 auto;}
 
