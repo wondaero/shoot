@@ -11,28 +11,30 @@
 
     body{background: #000; color: #fff;}
     html, body{height: 100%;}
-    header{margin-bottom: 10px; background: #fff; padding: 10px;}
+    header{margin-bottom: 10px; background: #fff; padding: 10px; box-shadow: 0 2px 10px rgb(255 255 255 / 70%)}
     .header-top{
-        margin-bottom: 10px; padding-bottom: 10px; display: flex; align-items: center;
+        margin-bottom: 5px; padding-bottom: 5px; display: flex; align-items: center;
         justify-content: space-between; border-bottom: 1px solid rgba(0, 0, 0, .2);
     }
     .header-bottom{display: flex; align-items: center;}
-    .logo{margin: 0; padding: 0; color: darkgray;}
+    .logo{margin: 0; padding: 0; color: darkgray; font-size: 18px;}
     .start{
-        background: #00f; color: #fff; border-radius: 5px; border: 0; padding: 10px 20px; font-weight: 900;
+        background: #00f; color: #fff; border-radius: 5px; border: 0; padding: 5px 20px; font-weight: 900;
         display: inline-flex; align-items: center; justify-content: center;
     }
     input{display: none;}
     input + span{
-        border-radius: 5px; display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; font-weight: 900;
+        border-radius: 5px; display: inline-flex; align-items: center; justify-content: center; padding: 5px 18px; font-weight: 900;
         opacity: .2; margin-right: 5px;
     }
     .header-bottom input:last-child + span{margin-right: 0;}
+    input[value="1.5"] + span{background: #0f0; color: #000;}
+    input[value="1.2"] + span{background: #7f0;}
+    input[value="1"] + span{background: #ff0; color: #000;}
+    input[value=".8"] + span{background: #f70;}
     input[value=".5"] + span{background: #f00;}
-    input[value=".8"] + span{background: #ff0; color: #000;}
-    input[value="1"] + span{background: #0f0;}
 
-    input:checked + span{opacity: 1;}
+    input:checked + span{opacity: 1; box-shadow: inset 0 0 5px rgba(0, 0, 0, .5);}
 
     .wrapper2{width: 280px; margin: 0 auto;}
 
@@ -144,9 +146,11 @@
                 <div><button class="start" onclick="shoot.startGame();">시작</button></div>
             </div>
             <div class="header-bottom">
-                <label><input type="radio" name="level" value=".5" data-value="상" /><span>상</span></label>
-                <label><input type="radio" name="level" value=".8" data-value="중" /><span>중</span></label>
-                <label><input type="radio" name="level" value="1" data-value="하" checked /><span>하</span></label>
+                <label><input type="radio" name="level" value="1.5" data-value="1" checked /><span>1</span></label>
+                <label><input type="radio" name="level" value="1.2" data-value="2" /><span>2</span></label>
+                <label><input type="radio" name="level" value="1" data-value="3" /><span>3</span></label>
+                <label><input type="radio" name="level" value=".8" data-value="4" /><span>4</span></label>
+                <label><input type="radio" name="level" value=".5" data-value="5" /><span>5</span></label>
             </div>
         </header>
         <div class="wrapper2">
@@ -177,6 +181,8 @@
             t.missCnt = 0;
             t.shootCnt = 0;
 
+            t.targetCnt = 10;
+
             t.isStart = false;
             t.isGameOver = false;
             t.stopInc = false;
@@ -193,7 +199,7 @@
 
                 t.isStart = true;
 
-                qs('#guide').innerHTML = '표적을 맞혀주세요(1/10)';
+                qs('#guide').innerHTML = '표적을 맞혀주세요(1/' + t.targetCnt + ')';
                 qs('#state').classList.add('on');
 
                 for(let i = 0; i < 15; i++){
@@ -202,7 +208,7 @@
                     qs('#bullets').appendChild(div);
                 }
                 
-                for(let i = 0; i < 10; i++){
+                for(let i = 0; i < t.targetCnt; i++){
                     const delay = getRandomNum(1500, 4500);
 
                     const div = document.createElement('div');
@@ -220,8 +226,12 @@
                         if(!t.stopInc) t.targetIdx++;
 
                         t.stopInc = false;
-                        if(t.targetIdx == 10) t.gameOver();
-                        else qs('#guide').innerHTML = '표적을 맞혀주세요(' + (t.targetIdx + 1) + '/10)';
+                        if(t.targetIdx == t.targetCnt){
+                            setTimeout(function(){
+                                t.gameOver();
+                            }, 1000);
+                        }
+                        else qs('#guide').innerHTML = '표적을 맞혀주세요(' + (t.targetIdx + 1) + '/' + t.targetCnt + ')';
                     });
 
                     const copyDiv = div.cloneNode(true);
@@ -238,6 +248,8 @@
                 t.level = undefined;
                 t.isStart = t.isGameOver = t.stopInc = false;
 
+                t.targetCnt = 10;
+
                 qs('#guide').innerHTML = '시작버튼을 눌러주세요.';
 
                 qs('#board').innerHTML = '';
@@ -248,6 +260,7 @@
             }
 
             t.gameOver = function(){
+                if(t.isGameOver) return;
                 qs('#guide').innerHTML = '게임이 끝났습니다.';
                 qs('#board').innerText = `GAME OVER
                     난이도: ${t.level}
@@ -269,7 +282,7 @@
 
 
         function fnc1(e, type){
-           if(shoot.isGameOver){
+            if(shoot.isGameOver){
                 alert('게임이 끝났습니다.\n시작버튼을 눌러주세요.');
                 return;
             }
@@ -342,7 +355,9 @@
 
 
             if(!(bullets.length - 1)){
-                shoot.gameOver();
+                setTimeout(function(){
+                    shoot.gameOver();
+                }, 1000);
                 return;
             }
 
@@ -362,11 +377,12 @@
                 const shooted = document.createElement('div');
                 shooted.classList.add('score');
                 qs('#score').appendChild(shooted);
-                if(shoot.targetIdx == 10){
-                    shoot.gameOver();
-                    return;
+                if(shoot.targetIdx == shoot.targetCnt){
+                    setTimeout(function(){
+                        shoot.gameOver();
+                    }, 1000);
                 }else{
-                    qs('#guide').innerHTML = '표적을 맞혀주세요(' + (shoot.targetIdx + 1) + '/10)';
+                    qs('#guide').innerHTML = '표적을 맞혀주세요(' + (shoot.targetIdx + 1) + '/' + shoot.targetCnt + ')';
                 }
             }
         }
